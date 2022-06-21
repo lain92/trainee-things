@@ -5,6 +5,12 @@ provider:
   name: aws
   runtime: python3.8
   region: eu-central-1
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: 'lambda:UpdateFunctionCode'
+          Resource: arn:aws:lambda:eu-central-1:*:*
 
 functions:
   hello:
@@ -13,3 +19,9 @@ functions:
       - httpApi:
           path: /
           method: get
+  calc:
+    handler: calculation_handler.calculate_response
+    events:
+      - httpApi:
+          path: /calculate
+          method: post
