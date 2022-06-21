@@ -5,12 +5,19 @@ provider:
   name: aws
   runtime: python3.8
   region: eu-central-1
+  environment:
+    DYNAMO_DB_CALC_RESULTS: ${self:service}-calcResult-${sls:stage}
   iam:
     role:
       statements:
-        - Effect: Allow
-          Action: 'lambda:UpdateFunctionCode'
-          Resource: arn:aws:lambda:eu-central-1:*:*
+        - Effect: 'Allow'
+          Action:
+            - 'dynamodb:PutItem'
+            - 'dynamodb:Get*'
+            - 'dynamodb:Scan*'
+            - 'dynamodb:UpdateItem'
+            - 'dynamodb:DeleteItem'
+          Resource: arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:service}-calcResult-${sls:stage}
 
 functions:
   hello:
@@ -25,3 +32,27 @@ functions:
       - httpApi:
           path: /calculate
           method: post
+  getCalcFromDb:
+    handler: calculation_handler.get_latest_dynamo_entry
+    events:
+      - httpApi:
+          path: /latest
+          method: get
+
+resources:
+  Resources:
+    CustomerTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: primary_key
+            AttributeType: S
+          - AttributeName: created_on
+            AttributeType: S
+        BillingMode: PAY_PER_REQUEST
+        KeySchema:
+          - AttributeName: primary_key
+            KeyType: HASH
+          - AttributeName: created_on
+            KeyType: RANGE
+        TableName: ${self:service}-calcResult-${sls:stage}
