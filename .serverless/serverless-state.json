@@ -21,9 +21,10 @@
                 "dynamodb:Get*",
                 "dynamodb:Scan*",
                 "dynamodb:UpdateItem",
-                "dynamodb:DeleteItem"
+                "dynamodb:DeleteItem",
+                "dynamodb:Query"
               ],
-              "Resource": "arn:aws:dynamodb:eu-central-1:232608688838:table/trainee-things-calcResult-dev"
+              "Resource": "arn:aws:dynamodb:eu-central-1:147424754396:table/trainee-things-calcResult-dev"
             }
           ]
         }
@@ -208,7 +209,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/trainee-things/dev/1655823683239-2022-06-21T15:01:23.239Z/trainee-things.zip"
+                "S3Key": "serverless/trainee-things/dev/1656283427782-2022-06-26T22:43:47.782Z/trainee-things.zip"
               },
               "Handler": "handler.hello",
               "Runtime": "python3.8",
@@ -238,7 +239,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/trainee-things/dev/1655823683239-2022-06-21T15:01:23.239Z/trainee-things.zip"
+                "S3Key": "serverless/trainee-things/dev/1656283427782-2022-06-26T22:43:47.782Z/trainee-things.zip"
               },
               "Handler": "calculation_handler.calculate_response",
               "Runtime": "python3.8",
@@ -268,7 +269,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/trainee-things/dev/1655823683239-2022-06-21T15:01:23.239Z/trainee-things.zip"
+                "S3Key": "serverless/trainee-things/dev/1656283427782-2022-06-26T22:43:47.782Z/trainee-things.zip"
               },
               "Handler": "calculation_handler.get_latest_dynamo_entry",
               "Runtime": "python3.8",
@@ -291,34 +292,34 @@
               "GetCalcFromDbLogGroup"
             ]
           },
-          "HelloLambdaVersionP9IOIOZICRvxQAifXCIwKZH6DQJ7lREjj0e4QNjqTY": {
+          "HelloLambdaVersionmeTJKSSJmxCRbDIg8XWfLjRufDVAptlyXspo4NmI": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "HelloLambdaFunction"
               },
-              "CodeSha256": "r8cGQgm4QFAe65VVPEMd9Zhd6Gc6h3JQm9PD3J4Jswo="
+              "CodeSha256": "U7ugGWLuFNVpcn4SidzYq2U7e776Ki2WBQ4OEOBtFmM="
             }
           },
-          "CalcLambdaVersionlWhFlN6IPWpZXwoimcXyz0uOgeeclEOx1YMANq2P4I": {
+          "CalcLambdaVersiongZnNuQ1oNMWrWe2luEiIR8fLyml1U8HivbvKhFJqPpc": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "CalcLambdaFunction"
               },
-              "CodeSha256": "r8cGQgm4QFAe65VVPEMd9Zhd6Gc6h3JQm9PD3J4Jswo="
+              "CodeSha256": "U7ugGWLuFNVpcn4SidzYq2U7e776Ki2WBQ4OEOBtFmM="
             }
           },
-          "GetCalcFromDbLambdaVersion7opVXpOlBt6foiDbnoMLgEVR8ieeTDM1JhBLGk3p0d8": {
+          "GetCalcFromDbLambdaVersionNsIQmat7B5mmZCaHTCIkFkQxKq0ynasCzgQ6Da3gZ8k": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "GetCalcFromDbLambdaFunction"
               },
-              "CodeSha256": "r8cGQgm4QFAe65VVPEMd9Zhd6Gc6h3JQm9PD3J4Jswo="
+              "CodeSha256": "U7ugGWLuFNVpcn4SidzYq2U7e776Ki2WBQ4OEOBtFmM="
             }
           },
           "HttpApi": {
@@ -562,22 +563,22 @@
             "Properties": {
               "AttributeDefinitions": [
                 {
-                  "AttributeName": "primary_key",
+                  "AttributeName": "creation_date",
                   "AttributeType": "S"
                 },
                 {
-                  "AttributeName": "created_on",
+                  "AttributeName": "creation_time",
                   "AttributeType": "S"
                 }
               ],
               "BillingMode": "PAY_PER_REQUEST",
               "KeySchema": [
                 {
-                  "AttributeName": "primary_key",
+                  "AttributeName": "creation_date",
                   "KeyType": "HASH"
                 },
                 {
-                  "AttributeName": "created_on",
+                  "AttributeName": "creation_time",
                   "KeyType": "RANGE"
                 }
               ],
@@ -597,7 +598,7 @@
           "HelloLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "HelloLambdaVersionP9IOIOZICRvxQAifXCIwKZH6DQJ7lREjj0e4QNjqTY"
+              "Ref": "HelloLambdaVersionmeTJKSSJmxCRbDIg8XWfLjRufDVAptlyXspo4NmI"
             },
             "Export": {
               "Name": "sls-trainee-things-dev-HelloLambdaFunctionQualifiedArn"
@@ -606,7 +607,7 @@
           "CalcLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "CalcLambdaVersionlWhFlN6IPWpZXwoimcXyz0uOgeeclEOx1YMANq2P4I"
+              "Ref": "CalcLambdaVersiongZnNuQ1oNMWrWe2luEiIR8fLyml1U8HivbvKhFJqPpc"
             },
             "Export": {
               "Name": "sls-trainee-things-dev-CalcLambdaFunctionQualifiedArn"
@@ -615,7 +616,7 @@
           "GetCalcFromDbLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "GetCalcFromDbLambdaVersion7opVXpOlBt6foiDbnoMLgEVR8ieeTDM1JhBLGk3p0d8"
+              "Ref": "GetCalcFromDbLambdaVersionNsIQmat7B5mmZCaHTCIkFkQxKq0ynasCzgQ6Da3gZ8k"
             },
             "Export": {
               "Name": "sls-trainee-things-dev-GetCalcFromDbLambdaFunctionQualifiedArn"
@@ -761,7 +762,7 @@
         "timeout": 6,
         "runtime": "python3.8",
         "vpc": {},
-        "versionLogicalId": "HelloLambdaVersionP9IOIOZICRvxQAifXCIwKZH6DQJ7lREjj0e4QNjqTY"
+        "versionLogicalId": "HelloLambdaVersionmeTJKSSJmxCRbDIg8XWfLjRufDVAptlyXspo4NmI"
       },
       "calc": {
         "handler": "calculation_handler.calculate_response",
@@ -781,7 +782,7 @@
         "timeout": 6,
         "runtime": "python3.8",
         "vpc": {},
-        "versionLogicalId": "CalcLambdaVersionlWhFlN6IPWpZXwoimcXyz0uOgeeclEOx1YMANq2P4I"
+        "versionLogicalId": "CalcLambdaVersiongZnNuQ1oNMWrWe2luEiIR8fLyml1U8HivbvKhFJqPpc"
       },
       "getCalcFromDb": {
         "handler": "calculation_handler.get_latest_dynamo_entry",
@@ -801,7 +802,7 @@
         "timeout": 6,
         "runtime": "python3.8",
         "vpc": {},
-        "versionLogicalId": "GetCalcFromDbLambdaVersion7opVXpOlBt6foiDbnoMLgEVR8ieeTDM1JhBLGk3p0d8"
+        "versionLogicalId": "GetCalcFromDbLambdaVersionNsIQmat7B5mmZCaHTCIkFkQxKq0ynasCzgQ6Da3gZ8k"
       }
     },
     "resources": {
@@ -811,22 +812,22 @@
           "Properties": {
             "AttributeDefinitions": [
               {
-                "AttributeName": "primary_key",
+                "AttributeName": "creation_date",
                 "AttributeType": "S"
               },
               {
-                "AttributeName": "created_on",
+                "AttributeName": "creation_time",
                 "AttributeType": "S"
               }
             ],
             "BillingMode": "PAY_PER_REQUEST",
             "KeySchema": [
               {
-                "AttributeName": "primary_key",
+                "AttributeName": "creation_date",
                 "KeyType": "HASH"
               },
               {
-                "AttributeName": "created_on",
+                "AttributeName": "creation_time",
                 "KeyType": "RANGE"
               }
             ],
@@ -856,7 +857,7 @@
     "artifact": "/mnt/c/Users/L4IN/Desktop/aws_projects/trainee-things/.serverless/trainee-things.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/trainee-things/dev/1655823683239-2022-06-21T15:01:23.239Z",
+    "artifactDirectoryName": "serverless/trainee-things/dev/1656283427782-2022-06-26T22:43:47.782Z",
     "artifact": "trainee-things.zip"
   }
 }

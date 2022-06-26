@@ -1,54 +1,70 @@
+import datetime
 import json
-import logging
 import os
 import time
-import uuid
 from decimal import Decimal
+from json import JSONDecodeError
 
 import boto3
+from boto3.dynamodb.conditions import Key
+
+from calculation import Calculation, CalculationResult
+from response import Response
 
 dynamodb = boto3.resource('dynamodb')
 
 
 def calculate_response(event, context):
-    body = json.loads(event['body'])
+    try:
+        body = json.loads(event['body'])
+    except JSONDecodeError:
+        return Response(400, "", "invalid body as input").return_as_json(encoder=DecimalEncoder)
 
-    number1 = body['number1']
-    number2 = body['number2']
+    if not body or 'number1' not in body or 'number2' not in body:
+        return Response(400, "", "invalid body as input").return_as_json(encoder=DecimalEncoder)
 
-    if number2 == 0:
-        logging.error("division by 0 not possible")
-        body['errorMessage'] = "division by 0 not possible"
-        return {"statusCode": 400, "body": json.dumps(body)}
+    calculation_result = Calculation(body['number1'], body['number2']).calculate()
 
-    result = {
-        'sum': number1 + number2,
-        'diff': number1 - number2,
-        'product': number1 + number2,
-        'quotient': number1 / number2
-    }
-    save_calculation(result, body)
-    return {"statusCode": 200, "body": json.dumps(result, cls=DecimalEncoder)}
+    if not isinstance(calculation_result, CalculationResult):
+        return Response(400, "", calculation_result).return_as_json(encoder=DecimalEncoder)
+
+    save_calculation(calculation_result, body)
+    return Response(200, calculation_result.return_as_json(), "").return_as_json(encoder=DecimalEncoder)
 
 
-def save_calculation(result, body):
+def save_calculation(calculation_result, body):
     table = dynamodb.Table(os.environ['DYNAMO_DB_CALC_RESULTS'])
     db_item = {
-        'primary_key': str(uuid.uuid1()),
-        'created_on': str(time.time()),
+        'creation_date': str(datetime.date.today()),
+        'creation_time': str(time.time()),
         'requestBody': body,
-        'result': result
+        'result': calculation_result.return_as_json()
     }
     parsed_db_item = json.loads(json.dumps(db_item), parse_float=Decimal)
     table.put_item(Item=parsed_db_item)
 
 
 def get_latest_dynamo_entry(event, context):
+    if "queryStringParameters" not in event and "date" not in event["queryStringParameters"]:
+        return Response(400, "", "missing date as queryParameter").return_as_json()
+
+    date = event["queryStringParameters"]["date"]
+    try:
+        validate_date(date)
+    except ValueError:
+        return Response(400, "", "Incorrect data format, should be YYYY-MM-DD").return_as_json()
+
     table = dynamodb.Table(os.environ['DYNAMO_DB_CALC_RESULTS'])
-    scan_result = table.scan()
-    items = scan_result['Items']
-    sorted_items = sorted(items, key=lambda item: item['created_on'], reverse=True)
-    return {"statusCode": 200, "body": json.dumps(sorted_items[0], cls=DecimalEncoder)}
+    query_result = table.query(KeyConditionExpression=Key('creation_date').eq(date), Limit=1, ScanIndexForward=False)
+    items = query_result['Items']
+    return {"statusCode": 200, "body": json.dumps(items, cls=DecimalEncoder)}
+
+
+def validate_date(date_string):
+    try:
+        datetime.datetime.strptime(date_string, '%Y-%m-%d')
+    except ValueError:
+        raise ValueError("Incorrect data format, should be YYYY-MM-DD")
 
 
 class DecimalEncoder(json.JSONEncoder):
